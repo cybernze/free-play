@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="Official games that open in the browser. Each Play button goes to the game's own site.">
+  <meta property="og:title" content="Free Play">
+  <meta property="og:description" content="Official games that open in the browser. No install.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://cybernze.github.io/free-play/">
+  <meta property="og:image" content="https://cybernze.github.io/free-play/og.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Free Play">
+  <meta name="twitter:description" content="Official games that open in the browser. No install.">
+  <meta name="twitter:image" content="https://cybernze.github.io/free-play/og.jpg">
+  <title>Free Play</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect fill='%23f3ecdf' width='32' height='32'/%3E%3Crect x='4' y='8' width='24' height='16' rx='2' fill='%23c4192e'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560&family=Outfit:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #f3ecdf;
+      --card: #fffaf3;
+      --ink: #1c140f;
+      --muted: #5e5146;
+      --line: #e0d0bc;
+      --red: #c4192e;
+      --red-hot: #a31324;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Outfit, "Segoe UI", sans-serif;
+      font-size: 1rem;
+      line-height: 1.45;
+    }
+
+    .skip {
+      position: absolute;
+      left: 12px;
+      top: -48px;
+      z-index: 2;
+      padding: 10px 14px;
+      background: var(--ink);
+      color: var(--paper);
+      font-weight: 600;
+    }
+
+    .skip:focus { top: 12px; }
+
+    .sr {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    :focus-visible {
+      outline: 3px solid var(--red);
+      outline-offset: 3px;
+    }
+
+    .wrap {
+      width: min(1120px, calc(100% - 32px));
+      margin-inline: auto;
+    }
+
+    header.wrap { padding-top: max(28px, env(safe-area-inset-top)); }
+
+    .ticket {
+      padding: 28px 28px 22px;
+      background: var(--card);
+      border: 2px solid var(--ink);
+      box-shadow: 8px 8px 0 var(--red);
+    }
+
+    .stamp {
+      display: inline-block;
+      margin: 0 0 12px;
+      padding: 4px 10px 3px;
+      background: var(--red);
+      color: #fffaf3;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: Fraunces, Georgia, serif;
+      font-weight: 560;
+      font-size: clamp(3.2rem, 8vw, 5.4rem);
+      line-height: 0.9;
+      letter-spacing: -0.03em;
+    }
+
+    .lede {
+      margin: 14px 0 0;
+      max-width: 36rem;
+      font-size: 1.2rem;
+    }
+
+    .note {
+      margin: 8px 0 0;
+      max-width: 36rem;
+      color: var(--muted);
+    }
+
+    .find {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: end;
+      margin-top: 22px;
+    }
+
+    label { font-weight: 600; }
+
+    input[type="search"] {
+      width: min(100%, 420px);
+      min-height: 48px;
+      margin-top: 6px;
+      padding: 0 14px;
+      border: 2px solid var(--ink);
+      border-radius: 0;
+      background: #fff;
+      color: var(--ink);
+      font: inherit;
+    }
+
+    .aisles {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 22px 0 0;
+    }
+
+    .btn {
+      min-height: 48px;
+      padding: 8px 16px;
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      background: transparent;
+      color: var(--ink);
+      font: inherit;
+      font-weight: 600;
+    }
+
+    .btn[aria-pressed="true"] {
+      background: var(--ink);
+      color: var(--paper);
+    }
+
+    .count {
+      margin: 18px 0;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .empty[hidden], .card[hidden] { display: none; }
+
+    .empty {
+      margin: 12px 0 28px;
+      padding: 18px;
+      background: var(--card);
+      border: 2px solid var(--ink);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+      margin: 0 0 28px;
+    }
+
+    .card {
+      display: flex;
+      flex-direction: column;
+      background: var(--card);
+      border: 2px solid var(--ink);
+    }
+
+    .shot {
+      aspect-ratio: 16 / 9;
+      background: #111;
+      border-bottom: 2px solid var(--ink);
+    }
+
+    .shot img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .shot img.logo { object-fit: contain; }
+
+    .body {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+      padding: 14px 14px 16px;
+    }
+
+    .kind {
+      margin: 0;
+      color: var(--red);
+      font-weight: 600;
+    }
+
+    h2 {
+      margin: 0;
+      font-family: Fraunces, Georgia, serif;
+      font-size: 1.7rem;
+      font-weight: 560;
+      line-height: 1.05;
+    }
+
+    .body p { margin: 0; color: var(--muted); }
+
+    .play {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: auto;
+      min-height: 48px;
+      background: var(--red);
+      color: #fffaf3;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    footer.wrap {
+      padding-bottom: max(36px, env(safe-area-inset-bottom));
+    }
+
+    footer p {
+      margin: 0;
+      max-width: 38rem;
+      color: var(--muted);
+    }
+
+    @media (hover: hover) {
+      .btn:hover { background: #fff; }
+      .btn[aria-pressed="true"]:hover { background: var(--ink); }
+      .play:hover { background: var(--red-hot); }
+    }
+
+    .play:active { background: var(--red-hot); }
+
+    @media (min-width: 720px) {
+      .grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (min-width: 1040px) {
+      .grid { grid-template-columns: 1fr 1fr 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+    }
+
+    @media (prefers-contrast: more) {
+      .card, .ticket, .play, .btn, input { border-width: 3px; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#games">Skip to games</a>
+  <header class="wrap">
+    <div class="ticket">
+      <p class="stamp">Official sites only</p>
+      <h1>Free Play</h1>
+      <p class="lede">Games that open in the browser. No install.</p>
+      <p class="note">Play goes to the game's own site, in a new tab.</p>
+    </div>
+    <form class="find" id="find" role="search">
+      <div>
+        <label for="q">Find a game</label><br>
+        <input id="q" type="search" placeholder="Chess, eggs, cookies" autocomplete="off">
+      </div>
+    </form>
+  </header>
+  <main class="wrap">
+    <div class="aisles" role="group" aria-label="Game types">
+      <button class="btn" type="button" data-aisle="all" aria-pressed="true">All</button>
+      <button class="btn" type="button" data-aisle="puzzle" aria-pressed="false">Puzzle</button>
+      <button class="btn" type="button" data-aisle="action" aria-pressed="false">Action</button>
+      <button class="btn" type="button" data-aisle="party" aria-pressed="false">Party</button>
+      <button class="btn" type="button" data-aisle="quiet" aria-pressed="false">Quiet</button>
+    </div>
+    <p class="count" id="count" aria-live="polite">12 games</p>
+    <div class="empty" id="empty" hidden>
+      <p>Nothing matches. Try another word, or show every game.</p>
+      <button class="btn" type="button" id="clear">Show every game</button>
+    </div>
+    <div class="grid" id="games" tabindex="-1">
+      <article class="card" data-aisle="puzzle" data-search="wordle daily word nytimes letters">
+        <div class="shot" style="background:#fff"><img class="logo" src="images/wordle.png" alt="Wordle spelled in green letter tiles"></div>
+        <div class="body">
+          <p class="kind">Puzzle</p>
+          <h2>Wordle</h2>
+          <p>The daily word, on The New York Times.</p>
+          <a class="play" href="https://www.nytimes.com/games/wordle/index.html" target="_blank" rel="noopener noreferrer">Play<span class="sr"> Wordle, opens in a new tab</span></a>
+        </div>
+      </article>
+      <article class="card" data-aisle="puzzle" data-search="2048 tiles numbers puzzle gabriele cirulli">
+        <div class="shot"><img src="images/2048.jpg" alt="2048, numbered tiles on a board"></div>
+        <div class="body">
+          <p class="kind">Puzzle</p>
+          <h2>2048</h2>
+          <p>The original sliding-tile puzzle.</p>
+          <a class="play" href="https://play2048.co" target="_blank" rel="noopener noreferrer">Play<span class="sr"> 2048, opens in a new tab</span></a>
+        </div>
+      </article>
+      <article class="card" data-aisle="puzzle" data-search="lichess chess free puzzles analysis">
+        <div class="shot" style="background:#111"><img class="logo" src="images/lichess.png" alt="lichess knight logo"></div>
+        <div class="body">
+          <p class="kind">Puzzle</p>
+          <h2>Lichess</h2>
+          <p>Free chess, with puzzles and analysis.</p>
+          <a class="play" href="https://lichess.org" target="_blank" rel="noopener noreferrer">Play<span class="sr"> Lichess, opens in a new tab</span></a>
+        </div>
+      </article>
+      <article class="card" data-aisle="action" data-search="krunker fps shooter multiplayer">
+        <div class="shot"><img src="images/krunker.jpg" alt="Krunker, a blocky first-person shooter"></div>
+        <div class="body">
+          <p class="kind">Action</p>
+          <h2>Krunker</h2>
+          <p>A free multiplayer shooter.</p>
+          <a class="play" href="https://krunker.io" target="_blank" rel="noopener noreferrer">Play<span class="sr"> Krunker, opens in a new tab</span></a>
+        </div>
+      </article>
+      <article class="card" data-aisle="action" data-search="shell shockers eggs guns shooter">
+        <div class="shot"><img src="images/shell.jpg" alt="Shell Shockers, eggs with guns"></div>
+        <div class="body">
+          <p class="kind">Action</p>
+          <h2>Shell Shockers</h2>
+          <p>Eggs with guns.</p>
+          <a class="play" href="https://shellshock.io" target="_blank" rel="noopener noreferrer">Play<span class="sr"> Shell Shockers, opens in a new tab</span></a>
+        </div>
+      </article>
+      <article class="card" data-aisle="action" data-search="slither snake io lights">
+        <div class="shot"><img src="images/slither.jpg" alt="slither.io, a glowing snake"></div>
+        <div class="body">
+          <p class="kind">Action</p>
+          <h2>slither.io</h2>
+          <p>Grow a snake. Eat the lights.</p>
+          <a class="play" href="https://slither.io" target="_blank" rel="noopener noreferrer">Play<span class="sr"> slither.io, opens in a new tab</span></a>
+        </div>
+      </article>
+      <article class="card" data-aisle="action" data-search="agar io cells eat split">
+        <div class="shot"><img src="images/agar.png" alt="Agar.io, colored cells"></div>
+        <div class="body">
+          <p class="kind">Action</p>
+          <h2>Agar.io</h2>
+          <p>Split, and eat.</p>
+          <a class="play" href="https://agar.io" target="_blank" rel="noopener noreferrer">Play<span class="sr"> Agar.io, opens in a new tab</span></a>
+        </div>
+      </article>
+      <article class="card" data-aisle="party" data-search="skribbl draw guess drawing">
+        <div class="shot"><img src="images/skribbl.png" alt="skribbl, a drawing and guessing game"></div>
+        <div class="body">
+          <p class="kind">Party</p>
+          <h2>skribbl</h2>
+          <p>One person draws. Everyone else guesses.</p>
+          <a class="play" href="https://skribbl.io" target="_blank" rel="noopener noreferrer">Play<span class="sr"> skribbl, opens in a new tab</span></a>
+        </div>
+      </article>
+      <article class="card" data-aisle="party" data-search="gartic phone telephone drawings">
+        <div class="shot"><img src="images/gartic.jpg" alt="Gartic Phone, drawings passed around a group"></div>
+        <div class="body">
+          <p class="kind">Party</p>
+          <h2>Gartic Phone</h2>
+          <p>The telephone game, with drawings.</p>
+          <a class="play" href="https://garticphone.com" target="_blank" rel="noopener noreferrer">Play<span class="sr"> Gartic Phone, opens in a new tab</span></a>
+        </div>
+      </article>
+      <article class="card" data-aisle="quiet" data-search="cookie clicker orteil idle cookies">
+        <div class="shot" style="background:#c8e4f5"><img class="logo" src="images/cookie.png" alt="Cookie Clicker, a chocolate chip cookie"></div>
+        <div class="body">
+          <p class="kind">Quiet</p>
+          <h2>Cookie Clicker</h2>
+          <p>The original, on the author's site.</p>
+          <a class="play" href="https://orteil.dashnet.org/cookieclicker/" target="_blank" rel="noopener noreferrer">Play<span class="sr"> Cookie Clicker, opens in a new tab</span></a>
+        </div>
+      </article>
+      <article class="card" data-aisle="quiet" data-search="slow roads drive endless scenery">
+        <div class="shot"><img src="images/roads.jpg" alt="Slow Roads, a drive through autumn trees"></div>
+        <div class="body">
+          <p class="kind">Quiet</p>
+          <h2>Slow Roads</h2>
+          <p>An endless drive.</p>
+          <a class="play" href="https://slowroads.io" target="_blank" rel="noopener noreferrer">Play<span class="sr"> Slow Roads, opens in a new tab</span></a>
+        </div>
+      </article>
+      <article class="card" data-aisle="quiet" data-search="a dark room fire text adventure doublespeak">
+        <div class="shot" style="background:#000"><img class="logo" src="images/adr.png" alt="A Dark Room logo, the letters ADR" style="image-rendering:pixelated"></div>
+        <div class="body">
+          <p class="kind">Quiet</p>
+          <h2>A Dark Room</h2>
+          <p>A fire, a room, and what comes after.</p>
+          <a class="play" href="https://adarkroom.doublespeakgames.com" target="_blank" rel="noopener noreferrer">Play<span class="sr"> A Dark Room, opens in a new tab</span></a>
+        </div>
+      </article>
+    </div>
+  </main>
+  <footer class="wrap">
+    <p>Twelve official games. Nothing here is a copy of someone else's disc.</p>
+  </footer>
+  <script src="ads.js"></script>
+  <script>
+    (function () {
+      var cards = Array.prototype.slice.call(document.querySelectorAll(".card"));
+      var buttons = Array.prototype.slice.call(document.querySelectorAll(".aisles .btn"));
+      var input = document.getElementById("q");
+      var count = document.getElementById("count");
+      var empty = document.getElementById("empty");
+      var aisle = "all";
+
+      function apply() {
+        var q = input.value.trim().toLowerCase();
+        var shown = 0;
+        cards.forEach(function (card) {
+          var okAisle = aisle === "all" || card.dataset.aisle === aisle;
+          var okQuery = !q || card.dataset.search.indexOf(q) !== -1;
+          var show = okAisle && okQuery;
+          card.hidden = !show;
+          if (show) shown += 1;
+        });
+        count.textContent = shown === 1 ? "1 game" : shown + " games";
+        empty.hidden = shown !== 0;
+      }
+
+      function setAisle(next) {
+        aisle = next;
+        buttons.forEach(function (button) {
+          button.setAttribute("aria-pressed", button.dataset.aisle === next ? "true" : "false");
+        });
+        apply();
+      }
+
+      buttons.forEach(function (button) {
+        button.addEventListener("click", function () { setAisle(button.dataset.aisle); });
+      });
+      input.addEventListener("input", apply);
+      document.getElementById("find").addEventListener("submit", function (event) {
+        event.preventDefault();
+        apply();
+      });
+      document.getElementById("clear").addEventListener("click", function () {
+        input.value = "";
+        setAisle("all");
+        input.focus();
+      });
+    })();
+  </script>
+</body>
+</html>
